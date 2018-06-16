@@ -1,10 +1,12 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Pair;
 import android.widget.Toast;
 
+import com.example.jokesource.JokerActivity;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
@@ -13,6 +15,7 @@ import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
 
 import java.io.IOException;
+import com.example.javajokes.Joker;
 
 /**
  * Created by isabe on 6/12/2018.
@@ -23,8 +26,9 @@ public class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, S
     private static MyApi myApiService = null;
     private Context context;
 
+    @SafeVarargs
     @Override
-    protected String doInBackground(Pair<Context, String>... pairs) {
+    protected final String doInBackground(Pair<Context, String>... pairs) {
         if (myApiService == null) {
             MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
@@ -49,7 +53,10 @@ public class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, S
 
     @Override
     protected void onPostExecute(String resultJoke) {
-        Toast.makeText(context, resultJoke, Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(context, JokerActivity.class);
+        intent.putExtra(JokerActivity.JOKE_KEY, resultJoke);
+        context.startActivity(intent);
+        //Toast.makeText(context, resultJoke, Toast.LENGTH_LONG).show();
     }
 
 }

@@ -2,28 +2,41 @@ package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import com.google.android.gms.ads.InterstitialAd;
+
 
 import com.example.javajokes.Joker;
 import com.example.jokesource.JokerActivity;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
     Joker myJoker = new Joker();
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, myJoker.getJoke()));
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544/1033173712");
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
     }
 
 
@@ -51,14 +64,22 @@ public class MainActivity extends AppCompatActivity {
 
     public void tellJoke(View view) {
 
+        if(mInterstitialAd.isLoaded()){
+            mInterstitialAd.show();
+            // Toast.makeText(this, jokeLibString, Toast.LENGTH_LONG).show();
+
+        }else {
+            Log.d(TAG, "The interstitial wasn`t loaded yet.");
+        }
         Joker myJoker = new Joker();
         String jokeLibString = myJoker.getJoke();
+        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, jokeLibString));
 
-        //Toast.makeText(this, jokeLibString, Toast.LENGTH_LONG).show();
 
-        Intent intent = new Intent(this, JokerActivity.class);
-        intent.putExtra(JokerActivity.JOKE_KEY, jokeLibString);
-        startActivity(intent);
+/**        Intent intent = new Intent(this, JokerActivity.class);
+ intent.putExtra(JokerActivity.JOKE_KEY, jokeLibString);
+ startActivity(intent);
+ **/
     }
 
 

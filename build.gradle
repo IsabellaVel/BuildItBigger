@@ -20,3 +20,13 @@ allprojects {
         google()
     }
 }
+
+task configureTestsMyTask {
+    shouldRunAfter tasks.getByPath(":backend:appengineStop")
+    doLast {
+        tasks.getByPath(":backend:appengineStart")
+        tasks.getByPath(":app:connectedAndroidTest")
+        tasks.getByPath(":backend:appengineStop")
+        println "Tests Configured"
+    }
+}
